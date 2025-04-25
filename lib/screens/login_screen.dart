@@ -1,6 +1,7 @@
 // screens/login_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_application_training/utils/auth.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -12,6 +13,14 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   bool _isPasswordVisible = false;
+  var storage;
+  @override
+  void initState() {
+    // TODO: implement initState
+
+    storage = FlutterSecureStorage();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +86,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 SizedBox(height: size.height * 0.05),
                 ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
+                    print("pressing");
+                    await storage.write(key: 'role', value: 'doctor');
+                    var current_role = await storage.read(key: 'role');
+                    print(current_role);
                     if (_formKey.currentState!.validate()) {
                       //     authUser(context, 'patient_study', 'study');
                       Navigator.pushNamed(context, '/chat_screen',
@@ -106,6 +119,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 SizedBox(height: size.height * 0.04),
                 ElevatedButton(
                   onPressed: () async {
+                    await storage.write(key: 'role', value: 'patient');
                     if (_formKey.currentState!.validate()) {
                       //await authUser(context, '', '1234567');
                       Navigator.pushNamed(context, '/doctors');

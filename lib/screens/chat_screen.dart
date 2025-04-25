@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_training/utils/mysql.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({Key? key}) : super(key: key);
@@ -10,6 +12,14 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _messageController = TextEditingController();
   final List<Map<String, dynamic>> _messages = [];
+  var storage;
+  late String? role = '';
+
+  @override
+  void initState() {
+    super.initState();
+    getRole();
+  }
 
   @override
   void dispose() {
@@ -17,7 +27,8 @@ class _ChatScreenState extends State<ChatScreen> {
     super.dispose();
   }
 
-  void _sendMessage() {
+  void _sendMessage() async {
+    await DatabaseHelper.insertData('a', 'b');
     if (_messageController.text.trim().isNotEmpty) {
       setState(() {
         _messages.add({
@@ -35,6 +46,18 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  Future<dynamic> getRole() async {
+    var messages = await DatabaseHelper.selectData();
+    print("msgs:" + messages.toString());
+    storage = FlutterSecureStorage();
+    role = await storage.read(key: 'role');
+
+    print(role);
+    setState(() {
+      role = role;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,8 +66,8 @@ class _ChatScreenState extends State<ChatScreen> {
           icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Чат с врачом',
+        title: Text(
+          'Чат с  ${role != null ? (role == 'doctor' ? 'пациентом' : 'доктором') : ''}',
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: const Color.fromARGB(255, 36, 103, 158),
@@ -61,8 +84,8 @@ class _ChatScreenState extends State<ChatScreen> {
                 itemBuilder: (context, index) {
                   final message = _messages[_messages.length - 1 - index];
                   return Align(
-                    alignment: message['isMe'] 
-                        ? Alignment.centerRight 
+                    alignment: message['isMe']
+                        ? Alignment.centerRight
                         : Alignment.centerLeft,
                     child: Container(
                       margin: const EdgeInsets.symmetric(vertical: 4),
@@ -77,9 +100,8 @@ class _ChatScreenState extends State<ChatScreen> {
                       child: Text(
                         message['text'],
                         style: TextStyle(
-                          color: message['isMe']
-                              ? Colors.white
-                              : Colors.black87,
+                          color:
+                              message['isMe'] ? Colors.white : Colors.black87,
                         ),
                       ),
                     ),
