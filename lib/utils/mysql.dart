@@ -1,6 +1,7 @@
 import 'package:mysql1/mysql1.dart';
 
 class DatabaseHelper {
+  //ф
   static Future<List> selectData() async {
     final conn = await MySqlConnection.connect(ConnectionSettings(
         host: '79.174.88.242',
