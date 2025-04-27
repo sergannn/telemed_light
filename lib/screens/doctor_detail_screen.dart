@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_application_training/main.dart';
 import 'package:flutter_application_training/utils/mysql.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -13,7 +14,8 @@ class DoctorDetailScreen extends StatefulWidget {
   State<DoctorDetailScreen> createState() => _DoctorDetailScreenState();
 }
 
-class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
+class _DoctorDetailScreenState extends State<DoctorDetailScreen>
+    with AwaitLogger {
   late Map<String, dynamic> doctor = {
     'id': 1,
     'name': 'Иванова Мария Петровна',
@@ -206,8 +208,16 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
                           onPressed: () async {
                             var role = await storage.read(key: 'role');
                             print(role);
+                            final DateTime? pickedDate = await showDatePicker(
+                              context: context,
+                              initialDate: DateTime.now(),
+                              firstDate: DateTime(2025, 1, 1, 1),
+                              lastDate: DateTime(2026, 1, 1),
+                            );
                             await DatabaseHelper.insertUpData(
-                                "03.09.1987", role, doctor['id'].toString());
+                                pickedDate.toString(),
+                                role,
+                                doctor['id'].toString());
                             // save doctor id to storage
 
                             await storage.write(
