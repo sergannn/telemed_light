@@ -14,6 +14,7 @@ void main() {
 mixin AwaitLogger {
   Future<T> loggedAwait<T>(Future<T> future, {String? tag}) async {
     debugPrint('⌛ [Await Start] $tag');
+
     final result = await future;
     debugPrint('✅ [Await End] $tag');
     return result;
