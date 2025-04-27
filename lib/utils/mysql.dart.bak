@@ -1,0 +1,42 @@
+import 'dart:developer';
+
+import 'package:flutter/foundation.dart';
+import 'package:mysql1/mysql1.dart';
+
+class DatabaseHelper {
+  static Future<List> selectData(String from, String to) async {
+    final conn = await MySqlConnection.connect(ConnectionSettings(host: '79.174.88.242', port: 16206, user: 'sergannn', password: 'Leeendows87!', db: 'sergannn'));
+
+    try {
+      print('SELECT * FROM chat_messages WHERE ( _from = "$from" AND _to = "$to" ) OR ( _from = "$to" AND _to = "$from" )');
+      var results = await conn.query('SELECT * FROM chat_messages WHERE ( _from = "$from" AND _to = "$to" ) OR ( _from = "$to" AND _to = "$from" )');
+      inspect(results);
+      print(results.toList());
+
+      for (var row in results) {
+        print('Name: ${row[0]}, email: ${row[1]}');
+      }
+
+      await conn.close();
+      return results.toList();
+    } catch (e) {
+      print('Error: $e');
+      return [];
+    } finally {}
+  }
+
+  static Future<bool> insertData(String message, String from, String to) async {
+    final conn = await MySqlConnection.connect(ConnectionSettings(host: '79.174.88.242', port: 16206, user: 'sergannn', password: 'Leeendows87!', db: 'sergannn'));
+    try {
+      await conn.query('INSERT INTO chat_messages (name, _from, _to, _text) VALUES ("a","$from","$to","$message" )');
+      await conn.close();
+      return true;
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error: $e');
+      }
+      // await conn.close();
+      return false;
+    }
+  }
+}

@@ -1,5 +1,8 @@
 // screens/doctors_list_screen.dart
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class DoctorsListScreen extends StatefulWidget {
   const DoctorsListScreen({Key? key}) : super(key: key);
@@ -10,22 +13,14 @@ class DoctorsListScreen extends StatefulWidget {
 
 class _DoctorsListScreenState extends State<DoctorsListScreen> {
   final List<Map<String, dynamic>> doctors = [
-    {
-      'id': 1,
-      'name': 'Иванова Мария Петровна',
-      'specialty': 'Терапевт',
-      'rating': 4.8,
-      'photo': 'assets/images/doctor_placeholder.png',
-      'description': 'Врач высшей категории, опыт работы более 15 лет'
-    },
+    {'id': 1, 'name': 'Иванова Мария Петровна', 'specialty': 'Терапевт', 'rating': 4.8, 'photo': 'assets/images/doctor_placeholder.png', 'description': 'Врач высшей категории, опыт работы более 15 лет'},
     {
       'id': 2,
       'name': 'Петров Сергей Викторович',
       'specialty': 'Хирург',
       'rating': 4.9,
       'photo': 'assets/images/doctor_placeholder.png',
-      'description':
-          'Доктор медицинских наук, специалист по малоинвазивной хирургии'
+      'description': 'Доктор медицинских наук, специалист по малоинвазивной хирургии'
     },
     {
       'id': 3,
@@ -49,17 +44,9 @@ class _DoctorsListScreenState extends State<DoctorsListScreen> {
       'specialty': 'Невролог',
       'rating': 4.5,
       'photo': 'assets/images/doctor_placeholder.png',
-      'description':
-          'Врач высшей категории, специалист по лечению неврологических заболеваний'
+      'description': 'Врач высшей категории, специалист по лечению неврологических заболеваний'
     },
-    {
-      'id': 6,
-      'name': 'Михайлова Наталья Сергеевна',
-      'specialty': 'Гинеколог',
-      'rating': 4.9,
-      'photo': 'assets/images/doctor_placeholder.png',
-      'description': 'Ведущий специалист по репродуктивному здоровью'
-    },
+    {'id': 6, 'name': 'Михайлова Наталья Сергеевна', 'specialty': 'Гинеколог', 'rating': 4.9, 'photo': 'assets/images/doctor_placeholder.png', 'description': 'Ведущий специалист по репродуктивному здоровью'},
     {
       'id': 7,
       'name': 'Смирнов Александр Петрович',
@@ -68,15 +55,18 @@ class _DoctorsListScreenState extends State<DoctorsListScreen> {
       'photo': 'assets/images/doctor_placeholder.png',
       'description': 'Специалист по лечению опорно-двигательного аппарата'
     },
-    {
-      'id': 8,
-      'name': 'Васильева Ольга Николаевна',
-      'specialty': 'Дерматолог',
-      'rating': 4.8,
-      'photo': 'assets/images/doctor_placeholder.png',
-      'description': 'Специалист по лечению кожных заболеваний'
-    }
+    {'id': 8, 'name': 'Васильева Ольга Николаевна', 'specialty': 'Дерматолог', 'rating': 4.8, 'photo': 'assets/images/doctor_placeholder.png', 'description': 'Специалист по лечению кожных заболеваний'}
   ];
+
+  var storage;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+
+    storage = FlutterSecureStorage();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -123,11 +113,29 @@ class _DoctorsListScreenState extends State<DoctorsListScreen> {
                 child: Material(
                   color: Colors.transparent,
                   child: InkWell(
-                    onTap: () => Navigator.pushNamed(
-                      context,
-                      '/doctor-detail',
-                      arguments: doctor,
-                    ),
+                    onTap: () async {
+                      await storage.write(key: 'recipient_id', value: doctor['id'].toString());
+                      // convert doctor data to string
+                      String doctorData = json.encode(doctor);
+
+                      await storage.write(key: 'doctor_data', value: doctorData);
+                      // get current role
+                      String role = await storage.read(key: 'role') ?? '';
+                      // if role is patient, go to patient detail screen
+                      if (role == 'patient') {
+                        Navigator.pushNamed(
+                          context,
+                          '/doctor-detail',
+                        );
+                      }
+                      // if role is doctor, go to doctor chat screen
+                      if (role == 'doctor') {
+                        Navigator.pushNamed(
+                          context,
+                          '/chat_screen',
+                        );
+                      }
+                    },
                     child: Padding(
                       padding: EdgeInsets.all(size.width * 0.05),
                       child: Row(

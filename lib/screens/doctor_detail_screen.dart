@@ -1,5 +1,10 @@
 // screens/doctor_detail_screen.dart
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_application_training/utils/mysql.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class DoctorDetailScreen extends StatefulWidget {
   const DoctorDetailScreen({Key? key}) : super(key: key);
@@ -9,7 +14,7 @@ class DoctorDetailScreen extends StatefulWidget {
 }
 
 class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
-  final Map<String, dynamic> doctor = {
+  late Map<String, dynamic> doctor = {
     'id': 1,
     'name': 'Иванова Мария Петровна',
     'specialty': 'Терапевт',
@@ -17,6 +22,26 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
     'photo': 'assets/images/doctor_placeholder2.png',
     'description': 'Врач высшей категории, опыт работы более 15 лет'
   };
+  var storage;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+
+    storage = FlutterSecureStorage();
+
+    getDoctor();
+
+    super.initState();
+  }
+
+  Future<dynamic> getDoctor() async {
+    storage = FlutterSecureStorage();
+    var doctorData = await storage.read(key: 'doctor_data');
+    setState(() {
+      doctor = json.decode(doctorData!);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -147,7 +172,11 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
                       // Кнопка чата
                       Center(
                         child: ElevatedButton(
-                          onPressed: () {
+                          onPressed: () async {
+                            // save doctor id to storage
+                            await storage.write(
+                                key: 'recipient_id',
+                                value: doctor['id'].toString());
                             Navigator.pushNamed(context, '/chat_screen');
                           },
                           style: ElevatedButton.styleFrom(
@@ -163,6 +192,42 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
                           ),
                           child: Text(
                             'Начать чат',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: size.width * 0.05,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 30),
+                      Center(
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            var role = await storage.read(key: 'role');
+                            print(role);
+                            await DatabaseHelper.insertUpData(
+                                "03.09.1987", role, doctor['id'].toString());
+                            // save doctor id to storage
+
+                            await storage.write(
+                                key: 'recipient_id',
+                                value: doctor['id'].toString());
+                            // Navigator.pushNamed(context, '/chat_screen');
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                const Color.fromARGB(255, 36, 103, 158),
+                            padding: EdgeInsets.symmetric(
+                              vertical: size.height * 0.02,
+                              horizontal: size.width * 0.2,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(32),
+                            ),
+                          ),
+                          child: Text(
+                            'Записаться',
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: size.width * 0.05,

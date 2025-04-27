@@ -70,11 +70,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     suffixIcon: IconButton(
-                      icon: Icon(_isPasswordVisible
-                          ? Icons.visibility
-                          : Icons.visibility_off),
-                      onPressed: () => setState(
-                          () => _isPasswordVisible = !_isPasswordVisible),
+                      icon: Icon(_isPasswordVisible ? Icons.visibility : Icons.visibility_off),
+                      onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
                     ),
                   ),
                   validator: (value) {
@@ -89,12 +86,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   onPressed: () async {
                     print("pressing");
                     await storage.write(key: 'role', value: 'doctor');
-                    var current_role = await storage.read(key: 'role');
-                    print(current_role);
+                    // var current_role = await storage.read(key: 'role');
+                    // print(current_role);
                     if (_formKey.currentState!.validate()) {
                       //     authUser(context, 'patient_study', 'study');
-                      Navigator.pushNamed(context, '/chat_screen',
-                          arguments: 'doctor');
+                      // Navigator.pushNamed(context, '/chat_screen');///doctors
+                      Navigator.pushNamed(context, '/doctors');
+
+                      ///doctors
                     }
                   },
                   style: ElevatedButton.styleFrom(
