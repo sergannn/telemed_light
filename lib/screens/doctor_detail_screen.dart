@@ -120,7 +120,7 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen>
 
                       // Специализация
                       Text(
-                        doctor['specialty'],
+                        doctor['specialty'] ?? 'терапевт',
                         style: TextStyle(
                           fontSize: size.width * 0.045,
                           color: Colors.grey[600],
@@ -168,7 +168,10 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen>
                         child: ElevatedButton(
                           onPressed: () async {
                             // save doctor id to storage
-
+                            storage.write(
+                              key: 'selectedUser',
+                              value: doctor['id'],
+                            );
                             Navigator.pushNamed(
                               context,
                               '/chat_screen',
@@ -201,55 +204,58 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen>
                         ),
                       ),
                       SizedBox(height: 30),
-                      Center(
-                        child: ElevatedButton(
-                          onPressed: () async {
-                            var role = await storage.read(key: 'role');
-                            print(role);
-                            final DateTime? pickedDate = await showDatePicker(
-                              context: context,
-                              initialDate: DateTime.now(),
-                              firstDate: DateTime(2025, 1, 1, 1),
-                              lastDate: DateTime(2026, 1, 1),
-                            );
-                            await DatabaseHelper.insertUpData(
-                              pickedDate.toString(),
-                              role,
-                              doctor['id'].toString(),
-                            );
-                            // save doctor id to storage
+                      doctor['isDoctor']
+                          ? Center(
+                            child: ElevatedButton(
+                              onPressed: () async {
+                                var role = await storage.read(key: 'role');
+                                print(role);
+                                final DateTime? pickedDate =
+                                    await showDatePicker(
+                                      context: context,
+                                      initialDate: DateTime.now(),
+                                      firstDate: DateTime(2025, 1, 1, 1),
+                                      lastDate: DateTime(2026, 1, 1),
+                                    );
+                                await DatabaseHelper.insertUpData(
+                                  pickedDate.toString(),
+                                  role,
+                                  doctor['id'].toString(),
+                                );
+                                // save doctor id to storage
 
-                            await storage.write(
-                              key: 'recipient_id',
-                              value: doctor['id'].toString(),
-                            );
-                            // Navigator.pushNamed(context, '/chat_screen');
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color.fromARGB(
-                              255,
-                              36,
-                              103,
-                              158,
+                                await storage.write(
+                                  key: 'recipient_id',
+                                  value: doctor['id'].toString(),
+                                );
+                                // Navigator.pushNamed(context, '/chat_screen');
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color.fromARGB(
+                                  255,
+                                  36,
+                                  103,
+                                  158,
+                                ),
+                                padding: EdgeInsets.symmetric(
+                                  vertical: size.height * 0.02,
+                                  horizontal: size.width * 0.2,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(32),
+                                ),
+                              ),
+                              child: Text(
+                                'Записаться',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: size.width * 0.05,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ),
-                            padding: EdgeInsets.symmetric(
-                              vertical: size.height * 0.02,
-                              horizontal: size.width * 0.2,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(32),
-                            ),
-                          ),
-                          child: Text(
-                            'Записаться',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: size.width * 0.05,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
+                          )
+                          : Container(),
                     ],
                   ),
                 ),

@@ -67,14 +67,6 @@ class _DoctorsListScreenState extends State<DoctorsListScreen> {
       print("Error fetching users: $e");
       setState(() => isLoading = false);
       // Fallback to your default doctors if needed
-      doctors = [
-        {
-          'id': 1,
-          'name': 'Иванова Мария Петровна',
-          // ... keep your default doctors data
-        },
-        // ... other default doctors
-      ];
     }
   }
 
@@ -178,7 +170,7 @@ class DoctorCard extends StatelessWidget {
                       ),
                       SizedBox(height: size.height * 0.02),
                       Text(
-                        doctor['age'] ?? 'отсутствует',
+                        doctor['age'].toString() ?? 'отсутствует',
                         style: TextStyle(
                           fontSize: size.width * 0.035,
                           color: Colors.grey[600],

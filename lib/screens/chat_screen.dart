@@ -48,23 +48,14 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Future<dynamic> getData() async {
     print('Fetching messages...');
-    //    var role = await storage.read(key: 'role');
-    //    var recipient_id = await storage.read(key: 'recipient_id');
-    //    var doctorData = await storage.read(key: 'doctor_data');
-    //    var doctor = json.decode(doctorData!);
-    var fromLoad = '';
-    var toLoad = '';
-    /*
-    if (role == 'patient') {
-      fromLoad = 'patient';
-      toLoad = recipient_id!;
-    } else {
-      fromLoad = doctor['id'].toString();
-      toLoad = 'patient';
-    }
-
+    var myId = await storage.read(key: 'sub');
+    print(myId);
+    print("<<my id");
+    var toUser = await storage.read(key: 'selectedUser');
+    print(toUser);
+    print("to user:<<<");
     try {
-      var messagesLoad = await DatabaseHelper.fetchMessages(fromLoad, toLoad);
+      var messagesLoad = await DatabaseHelper.fetchMessages(myId!, toUser!);
       print("msgs:" + messagesLoad.toString());
 
       if (mounted) {
@@ -72,14 +63,14 @@ class _ChatScreenState extends State<ChatScreen> {
         setState(() {
           this.role = role;
           this.doctor = doctor;
-          from = fromLoad;
-          to = toLoad;
+          from = myId;
+          to = toUser;
           _messages = messagesLoad;
         });
       }
     } catch (e) {
       print('Error fetching messages: $e');
-    }*/
+    }
   }
 
   void _sendMessage(to) async {
@@ -102,7 +93,6 @@ class _ChatScreenState extends State<ChatScreen> {
     });
 
     try {
-      from = '1';
       print(from);
       print("its ud");
       print(to);
@@ -176,8 +166,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                 : Colors.grey[200],
                       ),
                       child: Text(
-                        //message['_text'].toString(),
-                        'helo',
+                        message['_text'].toString(),
                         style: TextStyle(
                           color: isMe ? Colors.white : Colors.black87,
                         ),
