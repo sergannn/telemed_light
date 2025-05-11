@@ -140,8 +140,6 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen>
                         ),
                       ),
 
-                      SizedBox(height: size.height * 0.02),
-
                       // Специализация
                       Text(
                         doctor['specialty'] ?? 'терапевт',
@@ -186,7 +184,19 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen>
                       ),
 
                       SizedBox(height: size.height * 0.05),
+                      Text(
+                        doctor['description']
+                            .replaceAll('User since', "Зарегистрирован ")
+                            .substring(0, 27),
 
+                        style: TextStyle(
+                          fontSize: size.width * 0.04,
+                          color: Colors.grey[600],
+                          height: 1.5,
+                        ),
+                        textAlign: TextAlign.justify,
+                      ),
+                      SizedBox(height: size.height * 0.05),
                       // Кнопка чата
                       Center(
                         child: ElevatedButton(
