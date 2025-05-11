@@ -77,10 +77,11 @@ Widget regButton(
       );
       loader.hide();
       if (res == 'ok') {
+        Navigator.pushNamed(context, '/login'); /*
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => DoctorsListScreen()),
-        );
+        );*/
       }
     },
     child: Text("зарегистрироваться"),

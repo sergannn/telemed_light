@@ -1,6 +1,7 @@
 // screens/doctor_detail_screen.dart
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application_training/main.dart';
@@ -17,7 +18,26 @@ class DoctorDetailScreen extends StatefulWidget {
 class _DoctorDetailScreenState extends State<DoctorDetailScreen>
     with AwaitLogger {
   late Map<String, dynamic> doctor;
+  late final me;
   var storage;
+  final doctorEducationVariants = [
+    'Доктор медицинских наук',
+    'Кандидат медицинских наук',
+    'Врач высшей категории',
+    'Врач первой категории',
+    'Сертифицированный специалист',
+    'Выпускник медицинского университета',
+    'С отличием окончил мединститут',
+    'Прошел ординатуру по специальности',
+    'Сертифицированный хирург',
+    'Специалист с международной подготовкой',
+  ];
+  String getRandomDoctorEducation() {
+    final random = Random();
+    return doctorEducationVariants[random.nextInt(
+      doctorEducationVariants.length,
+    )];
+  }
 
   @override
   void initState() {
@@ -25,9 +45,13 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen>
 
     storage = FlutterSecureStorage();
 
-    //    getDoctor();
+    getData();
 
     super.initState();
+  }
+
+  Future<dynamic> getData() async {
+    me = await storage.read(key: 'email');
   }
 
   Future<dynamic> getDoctor() async {
@@ -152,7 +176,7 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen>
 
                       // Описание
                       Text(
-                        doctor['description'],
+                        getRandomDoctorEducation(),
                         style: TextStyle(
                           fontSize: size.width * 0.04,
                           color: Colors.grey[600],
@@ -204,7 +228,7 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen>
                         ),
                       ),
                       SizedBox(height: 30),
-                      doctor['isDoctor']
+                      doctor['isDoctor'] != null && doctor['isDoctor']
                           ? Center(
                             child: ElevatedButton(
                               onPressed: () async {
@@ -219,7 +243,8 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen>
                                     );
                                 await DatabaseHelper.insertUpData(
                                   pickedDate.toString(),
-                                  role,
+                                  me,
+                                  //doctor['name'],
                                   doctor['id'].toString(),
                                 );
                                 // save doctor id to storage

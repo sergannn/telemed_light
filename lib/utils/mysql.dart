@@ -20,12 +20,12 @@ class DatabaseHelper {
     }
   }
 
-  static Future<List<dynamic>> fetchUps(String from, String to) async {
+  static Future<List<dynamic>> fetchUps( String to) async {
     final url = Uri.parse(
-      'http://legendavolley.ru/telmedlight/selectup.php?from=$from&to=$to',
+      'http://legendavolley.ru/telmedlight/selectup.php?&to=$to',
     );
     final response = await http.get(url);
-
+    print(response.body);
     if (response.statusCode == 200) {
       return json.decode(response.body);
     } else {

@@ -1,5 +1,6 @@
 // screens/doctors_list_screen.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_application_training/utils/mysql.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -14,6 +15,7 @@ class _DoctorsListScreenState extends State<DoctorsListScreen> {
   List<Map<String, dynamic>> doctors =
       []; // Make it mutable for dynamic updates
   bool isLoading = true;
+  late dynamic imDoctor;
 
   @override
   void initState() {
@@ -34,6 +36,7 @@ class _DoctorsListScreenState extends State<DoctorsListScreen> {
       print("Fetched users: ${usersResponse.length}");
       var storage = FlutterSecureStorage();
       var isDoctor = await storage.read(key: 'doctor');
+      print(isDoctor);
       //      await storage.write(key: 'recipient_id', value: user['id'].toString());
       // Convert users to your doctor format
       final fetchedDoctors =
@@ -62,6 +65,7 @@ class _DoctorsListScreenState extends State<DoctorsListScreen> {
       setState(() {
         doctors = fetchedDoctors;
         isLoading = false;
+        imDoctor = isDoctor;
       });
     } catch (e) {
       print("Error fetching users: $e");
@@ -75,6 +79,49 @@ class _DoctorsListScreenState extends State<DoctorsListScreen> {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
+      floatingActionButton:
+          imDoctor == 'true'
+              ? FloatingActionButton(
+                onPressed: () async {
+                  var storage = FlutterSecureStorage();
+                  var myid = await storage.read(key: 'sub');
+                  List<dynamic> ups = await DatabaseHelper.fetchUps(myid!);
+                  // ups.forE
+                  await showDialog(
+                    context: context,
+                    builder: (a) {
+                      return AlertDialog(
+                        title: const Text('Записи'),
+                        content: Column(
+                          children: [
+                            ...ups
+                                .map(
+                                  (element) => Text(
+                                    element['_from'] + ':' + element['_text'],
+                                  ),
+                                )
+                                .toList(),
+                          ],
+                        ),
+
+                        actions: <Widget>[
+                          TextButton(
+                            style: TextButton.styleFrom(
+                              textStyle: Theme.of(context).textTheme.labelLarge,
+                            ),
+                            child: const Text('ok'),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+                child: Text('записи'),
+              )
+              : Container(),
       appBar: AppBar(
         // ... keep your existing app bar
       ),

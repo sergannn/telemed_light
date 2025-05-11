@@ -129,7 +129,7 @@ class _ChatScreenState extends State<ChatScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Чат с  ' + (args.toString()),
+          'Чат ',  // ' + (args.toString()),
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: const Color.fromARGB(255, 36, 103, 158),
